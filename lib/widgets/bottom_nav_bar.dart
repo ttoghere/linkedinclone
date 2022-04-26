@@ -15,7 +15,7 @@ class BottomNav extends StatelessWidget {
   }) : super(key: key);
 
   void _logOut(context) {
-    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -61,7 +61,7 @@ class BottomNav extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    auth.signOut();
+                    _auth.signOut();
                     Navigator.of(context).canPop()
                         ? Navigator.of(context).pop()
                         : null;
