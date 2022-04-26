@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:linkedinclone/screens/home_screen.dart';
+import 'package:linkedinclone/consts/user_state.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -12,14 +12,51 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final Future<FirebaseApp> _init = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeScreen(),
-    );
+    return FutureBuilder(
+        future: _init,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: Scaffold(
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("App is initialized"),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: Scaffold(
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("An Error Has Been Occured"),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Linked In Clone',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: UserState(),
+          );
+        });
   }
 }
