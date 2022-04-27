@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:linkedinclone/consts/global_variables.dart';
 
 class SignUp extends StatefulWidget {
@@ -14,14 +17,14 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  late TextEditingController _fullNameController;
-  late TextEditingController _emailController;
-  late TextEditingController _passTextController;
-  late TextEditingController _locationController;
-  late TextEditingController _phoneNumberController;
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passTextController = TextEditingController();
+  TextEditingController _locationController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
 
   FocusNode _emailFocusNode = FocusNode();
   FocusNode _passFocusNode = FocusNode();
@@ -45,6 +48,29 @@ class _SignUpState extends State<SignUp> {
     _positionCPFocusNode.dispose();
     _phoneNumberFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 20),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.linear,
+    )
+      ..addListener(() {
+        setState() {}
+      })
+      ..addStatusListener((animationStatus) {
+        if (animationStatus == AnimationStatus.completed) {
+          _animationController.reset();
+          _animationController.forward();
+        }
+      });
+    _animationController.forward();
+    super.initState();
   }
 
   @override
@@ -75,7 +101,7 @@ class _SignUpState extends State<SignUp> {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: _showImageDialog,
                           child: Padding(
                             padding: EdgeInsets.all(8),
                             child: Container(
@@ -93,7 +119,7 @@ class _SignUpState extends State<SignUp> {
                                 child: imageFile == null
                                     ? Icon(
                                         Icons.camera_enhance,
-                                        color: Colors.black,
+                                        color: Colors.white,
                                         size: 30,
                                       )
                                     : Image.file(
@@ -276,6 +302,9 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         _isLoading
                             ? Center(
                                 child: Container(
@@ -303,39 +332,43 @@ class _SignUpState extends State<SignUp> {
                                           fontSize: 20,
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 40,
-                                      ),
-                                      Center(
-                                        child: RichText(
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    "Already have an account?",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              TextSpan(text: "         "),
-                                              TextSpan(
-                                                text: "Login Here",
-                                                style: TextStyle(
-                                                    color: Colors.blue,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                     mainAxisAlignment: MainAxisAlignment.center,
                                   ),
                                 ),
                               ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Already have an account?",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                TextSpan(text: "      "),
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () =>
+                                        Navigator.of(context).canPop()
+                                            ? Navigator.of(context).pop()
+                                            : null,
+                                  text: "Login Here",
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     key: _signUpFormKey,
@@ -347,5 +380,86 @@ class _SignUpState extends State<SignUp> {
         ],
       ),
     );
+  }
+
+  void _showImageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Please choose an option"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                _getFromCamera();
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Icon(
+                      Icons.camera,
+                      color: Colors.amber[900],
+                    ),
+                  ),
+                  Text("Camera"),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                _getFromGallery();
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.amber[900],
+                    ),
+                  ),
+                  Text("Gallery"),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _getFromCamera() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxHeight: 1080,
+      maxWidth: 1080,
+    );
+    _cropImage(pickedFile!.path);
+    Navigator.of(context).pop();
+  }
+
+  void _getFromGallery() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxHeight: 1080,
+      maxWidth: 1080,
+    );
+    _cropImage(pickedFile!.path);
+    Navigator.of(context).pop();
+  }
+
+  void _cropImage(String path) async {
+    File? croppedImage = await ImageCropper().cropImage(
+      sourcePath: path,
+      maxHeight: 1080,
+      maxWidth: 1080,
+    );
+    if (croppedImage != null) {
+      setState(() {
+        imageFile = croppedImage;
+      });
+    }
   }
 }
