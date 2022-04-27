@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:linkedinclone/consts/global_methods.dart';
 import 'package:linkedinclone/consts/global_variables.dart';
 
 class SignUp extends StatefulWidget {
@@ -71,6 +74,54 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
       });
     _animationController.forward();
     super.initState();
+  }
+
+  void _submitFormOnSignUp() async {
+    final isValid = _signUpFormKey.currentState!.validate();
+    if (isValid) {
+      if (imageFile == null) {
+        GlobalMethod.showErrorDialog(
+          error: "Please pick an image",
+          ctx: context,
+        );
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passTextController.text.trim(),
+        );
+        final User? user = _auth.currentUser;
+        final _uid = user!.uid;
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child("userImages")
+            .child(_uid + ".jpg");
+        await ref.putFile(imageFile!);
+        imageUrl = await ref.getDownloadURL();
+        FirebaseFirestore.instance.collection("users").doc(_uid).set({
+          "id": _uid,
+          "name": _fullNameController.text,
+          "email": _emailController.text,
+          "userImage": imageUrl,
+          "phoneNumber": _phoneNumberController.text,
+          "location": _locationController.text,
+          "createdAt": Timestamp.now(),
+        });
+        Navigator.of(context).canPop() ? Navigator.of(context).pop() : null;
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalMethod.showErrorDialog(error: e.toString(), ctx: context);
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -201,7 +252,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                           onEditingComplete: () => FocusScope.of(context)
                               .requestFocus(_phoneNumberFocusNode),
                           keyboardType: TextInputType.name,
-                          controller: _fullNameController,
+                          controller:_passTextController,
                           focusNode: _passFocusNode,
                           validator: (value) {
                             if (value!.isEmpty || value.length <= 8) {
@@ -314,7 +365,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 ),
                               )
                             : MaterialButton(
-                                onPressed: () {},
+                                onPressed:_submitFormOnSignUp,
                                 color: Colors.blue,
                                 elevation: 8,
                                 shape: RoundedRectangleBorder(
