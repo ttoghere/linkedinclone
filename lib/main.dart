@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:linkedinclone/consts/user_state.dart';
+import 'package:linkedinclone/screens/auth/login_screen.dart';
 import 'package:linkedinclone/screens/auth/sign_up_screen.dart';
 import 'firebase_options.dart';
 
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),
-            home: SignUp(),
+            home: Login(),
           );
         });
   }

@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:linkedinclone/consts/global_methods.dart';
-import 'package:linkedinclone/screens/jobs/job_detail.dart';
-import 'package:uuid/uuid.dart';
+import '../consts/global_methods.dart';
+import '../screens/jobs/job_detail.dart';
 
 class JobWidget extends StatefulWidget {
   JobWidget({

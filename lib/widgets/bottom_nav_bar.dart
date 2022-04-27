@@ -1,11 +1,12 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:linkedinclone/consts/user_state.dart';
-import 'package:linkedinclone/screens/jobs/jobs_screen.dart';
-import 'package:linkedinclone/screens/jobs/upload_job.dart';
-import 'package:linkedinclone/screens/profile/company_profile.dart';
-import 'package:linkedinclone/screens/search/search_company.dart';
+import '../consts/user_state.dart';
+import '../screens/jobs/jobs_screen.dart';
+import '../screens/jobs/upload_job.dart';
+import '../screens/profile/company_profile.dart';
+import '../screens/search/search_company.dart';
+
 
 class BottomNav extends StatelessWidget {
   int indexNum = 0;

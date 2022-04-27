@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedinclone/screens/profile/company_profile.dart';
+import '../screens/profile/company_profile.dart';
 
 class CommentWidget extends StatefulWidget {
   final String commentId;

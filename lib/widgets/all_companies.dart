@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:linkedinclone/screens/profile/company_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../screens/profile/company_profile.dart';
 
 class AllWorkersWidget extends StatefulWidget {
   AllWorkersWidget({
