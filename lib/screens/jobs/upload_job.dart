@@ -29,7 +29,7 @@ class _UploadJobNowState extends State<UploadJobNow> {
     super.dispose();
   }
 
-  _pidkDateDialog() async {
+  _pickDateDialog() async {
     picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),

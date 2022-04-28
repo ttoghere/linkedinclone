@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linkedinclone/screens/auth/login_screen.dart';
 import 'package:linkedinclone/screens/jobs/jobs_screen.dart';
+import 'package:linkedinclone/screens/jobs/upload_job.dart';
 
 class UserState extends StatelessWidget {
   @override
@@ -13,7 +14,7 @@ class UserState extends StatelessWidget {
           print("User is not logged in yet");
           return Login();
         } else if (snapshot.hasData) {
-          return JobsScreen();
+          return UploadJobNow();
         } else if (snapshot.hasError) {
           return Scaffold(
             body: Center(
