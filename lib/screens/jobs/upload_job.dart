@@ -12,10 +12,14 @@ class UploadJobNow extends StatefulWidget {
 }
 
 class _UploadJobNowState extends State<UploadJobNow> {
-  TextEditingController _taskCategoryController = TextEditingController();
-  TextEditingController _taskTitleController = TextEditingController();
-  TextEditingController _taskDescriptionController = TextEditingController();
-  TextEditingController _deadlineDateController = TextEditingController();
+  TextEditingController _taskCategoryController =
+      TextEditingController(text: "Choose Task Category");
+  TextEditingController _taskTitleController =
+      TextEditingController(text: "Choose Job");
+  TextEditingController _taskDescriptionController =
+      TextEditingController(text: "Job Description");
+  TextEditingController _deadlineDateController =
+      TextEditingController(text: "Job Deadline Date");
   final _formKey = GlobalKey<FormState>();
   DateTime? picked;
   Timestamp? deadlineDateTimeStamp;
@@ -48,66 +52,69 @@ class _UploadJobNowState extends State<UploadJobNow> {
     }
   }
 
-  _showTaskCategoriesDialog({required Size size}) async{
-    await showDialog(
+  _showTaskCategoriesDialog({required Size size}) async {
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
-        title: Text(
-          "Job Category",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, color: Colors.white),
-        ),
-        content: Container(
-          width: size.width * 0.9,
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _taskCategoryController.text =
-                        Persitent.taskCategoryList[index];
-                  });
-                  Navigator.of(context).pop();
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_right_outlined,
-                      color: Colors.grey,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        Persitent.taskCategoryList[index],
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: Text(
+            "Job Category",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+          content: Container(
+            width: size.width * 0.9,
+            child: ListView.builder(
+              itemCount: Persitent.taskCategoryList.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _taskCategoryController.text =
+                          Persitent.taskCategoryList[index];
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.arrow_right_outlined,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          Persitent.taskCategoryList[index],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-            itemCount: Persitent.taskCategoryList.length,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).canPop() ? Navigator.pop(context) : null;
-            },
-            child: Text(
-              "Cancel",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).canPop() ? Navigator.pop(context) : null;
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -248,7 +255,7 @@ class TextFormFields extends StatelessWidget {
   final String valueKey;
   final TextEditingController controller;
   final bool enabled;
-  final VoidCallback function;
+  final Function function;
   final int maxLength;
   const TextFormFields({
     Key? key,
@@ -263,8 +270,10 @@ class TextFormFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(5),
-      child: GestureDetector(
-        onTap: function,
+      child: InkWell(
+        onTap: () {
+          function();
+        },
         child: TextFormField(
           validator: (value) {
             if (value!.isEmpty) {

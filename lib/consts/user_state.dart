@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linkedinclone/screens/auth/login_screen.dart';
-import 'package:linkedinclone/screens/jobs/jobs_screen.dart';
 import 'package:linkedinclone/screens/jobs/upload_job.dart';
 
 class UserState extends StatelessWidget {
