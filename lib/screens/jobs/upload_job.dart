@@ -48,8 +48,8 @@ class _UploadJobNowState extends State<UploadJobNow> {
     }
   }
 
-  _showTaskCategoriesDialog({required Size size}) {
-    showDialog(
+  _showTaskCategoriesDialog({required Size size}) async{
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.black,
@@ -115,6 +115,7 @@ class _UploadJobNowState extends State<UploadJobNow> {
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.black,
       bottomNavigationBar: BottomNav(indexNum: 2),
       body: Center(
         child: Padding(
@@ -154,8 +155,83 @@ class _UploadJobNowState extends State<UploadJobNow> {
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [],
+                        children: [
+                          TextTitles(label: "Job Category"),
+                          TextFormFields(
+                            valueKey: "JobCategory",
+                            controller: _taskCategoryController,
+                            enabled: true,
+                            function: () {
+                              _showTaskCategoriesDialog(size: _size);
+                            },
+                            maxLength: 100,
+                          ),
+                          TextTitles(label: "Job Title"),
+                          TextFormFields(
+                            valueKey: "JobTitle",
+                            controller: _taskTitleController,
+                            enabled: true,
+                            function: () {},
+                            maxLength: 100,
+                          ),
+                          TextTitles(label: "Job Description"),
+                          TextFormFields(
+                            valueKey: "JobDescription",
+                            controller: _taskDescriptionController,
+                            enabled: true,
+                            function: () {},
+                            maxLength: 100,
+                          ),
+                          TextTitles(label: "Job Deadline Date"),
+                          TextFormFields(
+                            valueKey: "Jobdeadline",
+                            controller: _deadlineDateController,
+                            enabled: false,
+                            function: () {
+                              _pickDateDialog();
+                            },
+                            maxLength: 100,
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 30),
+                      child: _isLoading
+                          ? CircularProgressIndicator()
+                          : MaterialButton(
+                              onPressed: () {},
+                              color: Colors.red[900],
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "Post Now",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Icon(
+                                      Icons.upload_file,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -172,7 +248,7 @@ class TextFormFields extends StatelessWidget {
   final String valueKey;
   final TextEditingController controller;
   final bool enabled;
-  final Function function;
+  final VoidCallback function;
   final int maxLength;
   const TextFormFields({
     Key? key,
@@ -188,7 +264,7 @@ class TextFormFields extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(5),
       child: GestureDetector(
-        onTap: () => function,
+        onTap: function,
         child: TextFormField(
           validator: (value) {
             if (value!.isEmpty) {

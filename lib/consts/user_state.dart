@@ -14,6 +14,7 @@ class UserState extends StatelessWidget {
           print("User is not logged in yet");
           return Login();
         } else if (snapshot.hasData) {
+          print("User is already logged in");
           return UploadJobNow();
         } else if (snapshot.hasError) {
           return Scaffold(
@@ -33,7 +34,7 @@ class UserState extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("SomeThing Happendes"),
+                Text("SomeThing Happend"),
                 CircularProgressIndicator(),
               ],
             ),
